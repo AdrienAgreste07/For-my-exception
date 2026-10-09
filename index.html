@@ -17,7 +17,6 @@
 
 body {
     background: #ffd1dc;
-    min-height: 100vh;
     min-height: 100dvh;
     display: flex;
     align-items: center;
@@ -28,7 +27,6 @@ body {
 .phone-container {
     width: 100%;
     max-width: 420px;
-    height: 100vh;
     height: 100dvh;
     background: white;
     position: relative;
@@ -237,7 +235,7 @@ body {
     pointer-events: none;
 }
 
-/* LÁ THƯ ĐỌC ĐƯỢC NỘI DUNG DÀI */
+/* LÁ THƯ CUỘN ĐƯỢC */
 
 .letter {
     position: absolute;
@@ -420,7 +418,7 @@ body {
 @keyframes heartPulse { to { transform: scale(1.06); } }
 @keyframes blinkHint { 50% { opacity: .4; } }
 
-/* ALBUM ẢNH */
+/* ALBUM */
 
 #photo-lightbox {
     display: none;
@@ -507,6 +505,7 @@ body {
 
 <body>
 
+<!-- NHẠC MP3 -->
 <audio id="audio-inlove" src="inlove.mp3" loop preload="auto"></audio>
 <audio id="audio-chochut" src="chochut.mp3" loop preload="auto"></audio>
 
@@ -550,7 +549,6 @@ body {
         </div>
     </div>
 
-    <!-- ĐẾM NGƯỢC -->
     <div id="countdown-screen">3</div>
 
     <!-- PHONG THƯ -->
@@ -565,7 +563,6 @@ body {
 
                     <!-- TRANG 1 -->
                     <div class="letter-page active" id="page-1">
-
                         <div class="letter-text">
                             Gửi em... <br><br>
 
@@ -579,15 +576,13 @@ body {
                             gửi đến em, mong em sẽ thích nha! 😘
                         </div>
 
-                        <button class="next-btn"
-                            onclick="nextPage(1,event)">
+                        <button class="next-btn" onclick="nextPage(1,event)">
                             Đọc tiếp nhaa 👉
                         </button>
                     </div>
 
                     <!-- TRANG 2 -->
                     <div class="letter-page" id="page-2">
-
                         <div class="letter-text">
                             Shawty à... <br><br>
 
@@ -608,15 +603,13 @@ body {
                             cảm xúc của em.
                         </div>
 
-                        <button class="next-btn"
-                            onclick="nextPage(2,event)">
+                        <button class="next-btn" onclick="nextPage(2,event)">
                             Tiếp nì 👉
                         </button>
                     </div>
 
                     <!-- TRANG 3 -->
                     <div class="letter-page" id="page-3">
-
                         <div class="letter-text">
                             Anh có một món quà nhỏ xíu xiu
                             muốn tặng iu đóo...
@@ -624,8 +617,7 @@ body {
                             Nhấn mở ra xem nhó!
                         </div>
 
-                        <div class="gift-box"
-                            onclick="startFinale(event)">
+                        <div class="gift-box" onclick="startFinale(event)">
                             🎁
                         </div>
                     </div>
@@ -635,34 +627,22 @@ body {
 
         </div>
     </div>
-
 </div>
 
-<!-- HIỆU ỨNG CUỐI -->
+<!-- MÀN HÌNH CUỐI -->
 <div id="finale-screen">
 
     <canvas id="matrix-canvas"></canvas>
 
-    <div class="finale-text-container"
-        onclick="openPhotoGallery()">
-
-        <div class="finale-title">
-            I Love You ❤️
-        </div>
-
-        <div class="finale-hint">
-            ✨ Chạm vào đây nè ✨
-        </div>
+    <div class="finale-text-container" onclick="openPhotoGallery()">
+        <div class="finale-title">I Love You ❤️</div>
+        <div class="finale-hint">✨ Chạm vào đây nè ✨</div>
     </div>
 
     <div id="photo-lightbox" onclick="showNextPhoto()">
 
         <div class="lightbox-card" id="lightbox-card">
-
-            <img id="large-img"
-                class="large-photo"
-                src=""
-                alt="Crush Memory">
+            <img id="large-img" class="large-photo" src="" alt="Crush Memory">
 
             <div class="photo-indicator" id="photo-indicator">
                 1 / 4
@@ -674,7 +654,6 @@ body {
         </div>
 
         <div class="final-message" id="final-message">
-
             <h2>Mãi bên nhau nhé!</h2>
 
             <p>
@@ -684,25 +663,71 @@ body {
                 Cảm ơn embe Thy vì đã xuất hiện
                 trong thanh xuân của anh! ❤️
             </p>
-
         </div>
     </div>
 </div>
 
 <script>
+
+/* =========================================
+   ÂM THANH
+   ========================================= */
+
 const audioInlove = document.getElementById('audio-inlove');
 const audioChochut = document.getElementById('audio-chochut');
 
+audioInlove.preload = "auto";
+audioChochut.preload = "auto";
+
+// Theo dõi tình trạng tải nhạc
+function monitorAudio(audio, name) {
+    audio.addEventListener("waiting", () => {
+        console.warn(name + ": đang chờ tải dữ liệu");
+    });
+
+    audio.addEventListener("stalled", () => {
+        console.warn(name + ": tải dữ liệu bị gián đoạn");
+    });
+
+    audio.addEventListener("playing", () => {
+        console.log(name + ": đang phát");
+    });
+
+    audio.addEventListener("error", () => {
+        console.error(name + ": lỗi tải nhạc", audio.error);
+    });
+}
+
+monitorAudio(audioInlove, "Inlove");
+monitorAudio(audioChochut, "Chờ Chút");
+
+// Tải sớm nhạc thứ hai để giảm thời gian chờ
+audioChochut.load();
+
+// Phát nhạc và xử lý lỗi
+function playAudio(audio) {
+    const result = audio.play();
+
+    if (result && typeof result.catch === "function") {
+        result.catch(error => {
+            console.warn("Không phát được nhạc:", error);
+        });
+    }
+}
+
+/* =========================================
+   MẬT KHẨU
+   ========================================= */
+
 let inputPass = "";
 const correctPass = "2710";
+
 const dots = document.querySelectorAll('.dot');
 const lockMsg = document.getElementById('lock-msg');
 const dotsContainer = document.getElementById('dots-container');
 
 let isAnimating = false;
 let isEnvelopeOpen = false;
-
-/* MẬT KHẨU */
 
 function addNum(num) {
     if (isAnimating || inputPass.length >= 4) return;
@@ -716,7 +741,8 @@ function addNum(num) {
         setTimeout(() => {
             if (inputPass === correctPass) {
 
-                audioInlove.play().catch(() => {});
+                // Phát nhạc khi nhập đúng mật khẩu
+                playAudio(audioInlove);
 
                 document.getElementById('lock-screen')
                     .style.display = 'none';
@@ -754,16 +780,15 @@ function deleteNum() {
 
 function updateDots() {
     dots.forEach((dot, index) => {
-        dot.classList.toggle(
-            'active',
-            index < inputPass.length
-        );
+        dot.classList.toggle('active', index < inputPass.length);
     });
 }
 
 window.addEventListener('keydown', e => {
-    if (document.getElementById('lock-screen')
-        .style.display === 'none') return;
+    if (
+        document.getElementById('lock-screen')
+            .style.display === 'none'
+    ) return;
 
     if (/^[0-9]$/.test(e.key)) {
         addNum(e.key);
@@ -772,7 +797,9 @@ window.addEventListener('keydown', e => {
     }
 });
 
-/* ĐẾM NGƯỢC */
+/* =========================================
+   ĐẾM NGƯỢC
+   ========================================= */
 
 function startCountdown() {
     const screen = document.getElementById('countdown-screen');
@@ -789,6 +816,7 @@ function startCountdown() {
             screen.innerText = count;
         } else {
             clearInterval(timer);
+
             screen.style.display = 'none';
 
             document.getElementById('letter-screen')
@@ -797,7 +825,9 @@ function startCountdown() {
     }, 900);
 }
 
-/* MỞ THƯ */
+/* =========================================
+   PHONG THƯ
+   ========================================= */
 
 function openEnvelope(element) {
     if (isEnvelopeOpen) return;
@@ -809,8 +839,6 @@ function openEnvelope(element) {
         element.classList.add('reading');
     }, 850);
 }
-
-/* CHUYỂN TRANG THƯ */
 
 function nextPage(currentPage, e) {
     if (e) e.stopPropagation();
@@ -835,7 +863,9 @@ function nextPage(currentPage, e) {
     }
 }
 
-/* DANH SÁCH ẢNH */
+/* =========================================
+   DANH SÁCH ẢNH
+   ========================================= */
 
 const crushImages = [
     "crush5.jpg",
@@ -846,33 +876,45 @@ const crushImages = [
 
 let fallingImgTimer = null;
 let activeFallingCount = 0;
-const maxFallingImages = 12;
+const maxFallingImages = 8;
 
-/* MÀN HÌNH CUỐI */
+let finaleStarted = false;
+
+/* =========================================
+   MÀN HÌNH CUỐI
+   ========================================= */
 
 function startFinale(e) {
     if (e) e.stopPropagation();
 
+    if (finaleStarted) return;
+    finaleStarted = true;
+
+    // Tắt bài đầu tiên
     audioInlove.pause();
     audioInlove.currentTime = 0;
 
-    audioChochut.play().catch(() => {});
+    // Chuyển sang bài thứ hai
+    playAudio(audioChochut);
 
     document.getElementById('finale-screen')
         .style.display = 'block';
 
     initMatrixRain();
 
-    fallingImgTimer = setInterval(createFallingImage, 550);
+    // Giảm số ảnh rơi để nhẹ hơn trên điện thoại
+    fallingImgTimer = setInterval(createFallingImage, 800);
 }
 
-/* MATRIX RAIN */
+/* =========================================
+   MATRIX RAIN
+   ========================================= */
 
 function initMatrixRain() {
     const canvas = document.getElementById('matrix-canvas');
     const ctx = canvas.getContext('2d');
 
-    const fontSize = 16;
+    const fontSize = 18;
     const chars = '0123456789ABCDEF♥♡ILOVEU'.split('');
 
     let columns;
@@ -894,7 +936,8 @@ function initMatrixRain() {
     function render(currentTime) {
         requestAnimationFrame(render);
 
-        if (currentTime - lastTime < 33) return;
+        // Giảm số khung hình để tiết kiệm tài nguyên
+        if (currentTime - lastTime < 50) return;
         lastTime = currentTime;
 
         ctx.fillStyle = 'rgba(0,0,0,0.12)';
@@ -906,7 +949,6 @@ function initMatrixRain() {
         ctx.font = `${fontSize}px monospace`;
 
         for (let i = 0; i < drops.length; i++) {
-
             const char = chars[
                 Math.floor(Math.random() * chars.length)
             ];
@@ -931,7 +973,9 @@ function initMatrixRain() {
     requestAnimationFrame(render);
 }
 
-/* ẢNH RƠI */
+/* =========================================
+   ẢNH RƠI
+   ========================================= */
 
 function createFallingImage() {
     if (activeFallingCount >= maxFallingImages) return;
@@ -961,7 +1005,9 @@ function createFallingImage() {
     }, duration * 1000);
 }
 
-/* ALBUM ẢNH */
+/* =========================================
+   ALBUM ẢNH
+   ========================================= */
 
 let currentPhotoIndex = 0;
 
@@ -1008,7 +1054,7 @@ function showNextPhoto() {
             .style.display = 'block';
     }
 }
-</script>
 
+</script>
 </body>
 </html>
